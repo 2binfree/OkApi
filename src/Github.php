@@ -17,7 +17,7 @@ class Github
 
     public function getUserInfos()
     {
-        $url = self::BASE_URL . "/users/" . $this->app->getGithubId();
+        $url = self::BASE_URL . "/users/" . $this->app->getLogin();
         return $this->app->getData($url);
     }
 }

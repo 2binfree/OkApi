@@ -25,17 +25,17 @@ class Application
     /** @var resource */
     private $client;
 
-    private $githubId;
+    private $login;
 
     private function __construct()
     {
         $credentials = include(__DIR__ . "/../config/credential.php");
-        $username = $credentials["username"];
+        $login = $credentials["username"];
         $password = $credentials["password"];
-        $this->githubId = $username;
+        $this->login = $login;
         $this->client = curl_init();
         curl_setopt($this->client, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($this->client, CURLOPT_USERPWD, "$username:$password");
+        curl_setopt($this->client, CURLOPT_USERPWD, "$login:$password");
         curl_setopt($this->client, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($this->client, CURLOPT_HEADER, 1);
         curl_setopt($this->client, CURLOPT_USERAGENT,'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13');
@@ -67,9 +67,9 @@ class Application
     /**
      * @return string
      */
-    public function getGithubId()
+    public function getLogin()
     {
-        return $this->githubId;
+        return $this->login;
     }
 
     public function __destruct()
