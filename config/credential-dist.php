@@ -3,4 +3,5 @@
 return [
     "user"      => "",
     "password"  => "",
+    "token"     => "",
 ];

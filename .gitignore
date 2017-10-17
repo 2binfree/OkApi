@@ -1,3 +1,5 @@
-
 /config/credential.php
 /vendor
+!/cache
+/cache/*
+!/cache/.gitkeep

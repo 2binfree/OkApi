@@ -15,9 +15,12 @@ class Github
         $this->app = $app;
     }
 
-    public function getUserInfos()
+    public function getUserInfos($user = null)
     {
-        $url = self::BASE_URL . "/users/" . $this->app->getLogin();
+        if (is_null($user)){
+            $user = $this->app->getLogin();
+        }
+        $url = self::BASE_URL . "/users/" . $user;
         return $this->app->getData($url);
     }
 }

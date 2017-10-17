@@ -22,6 +22,8 @@ class Application
     const AUTH_METHOD_BASIC = 1;
     const AUTH_METHOD_TOKEN = 2;
 
+    const CACHE_PATH = __DIR__  . '/../cache/';
+
     /** @var  Application */
     private static $instance;
 
@@ -63,17 +65,23 @@ class Application
 
     public function getData($url)
     {
-        curl_setopt($this->client, CURLOPT_URL, $url);
-        $output = curl_exec($this->client);
-        if(curl_errno($this->client))
-        {
-            throw new \Exception('Erreur Curl : ' . curl_error($this->client));
+        $cacheIndex = md5($url) . '.cached';
+        if (file_exists(self::CACHE_PATH . $cacheIndex)) {
+            $data = unserialize(file_get_contents(self::CACHE_PATH . $cacheIndex));
+        } else {
+            curl_setopt($this->client, CURLOPT_URL, $url);
+            $output = curl_exec($this->client);
+            if (curl_errno($this->client)) {
+                throw new \Exception('Erreur Curl : ' . curl_error($this->client));
+            }
+            $info = curl_getinfo($this->client);
+            $data = [
+                "data" => $output,
+                "info" => $info,
+            ];
+            file_put_contents(self::CACHE_PATH . $cacheIndex, serialize($data));
         }
-        $info = curl_getinfo($this->client);
-        return [
-          "data" => $output,
-          "info" => $info,
-        ];
+        return $data;
     }
 
     /**
