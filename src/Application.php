@@ -1,28 +1,14 @@
 <?php
-/**
- * Copyright (c) 2017. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
- * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
- * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
- * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
- * Vestibulum commodo. Ut rhoncus gravida arcu.
- */
-
-/**
- * Created by PhpStorm.
- * User: ubuntu
- * Date: 12/10/17
- * Time: 14:56
- */
 
 namespace Wcs;
 
+
+use Wcs\cache\Cache;
 
 class Application
 {
     const AUTH_METHOD_BASIC = 1;
     const AUTH_METHOD_TOKEN = 2;
-
-    const CACHE_PATH = __DIR__  . '/../cache/';
 
     /** @var  Application */
     private static $instance;
@@ -36,8 +22,12 @@ class Application
     /** @var  @var int */
     private $authMethod;
 
+    /** @var  Cache */
+    private $cache;
+
     private function __construct($authMethod = self::AUTH_METHOD_BASIC)
     {
+        $this->initCache();
         $credentials = include(__DIR__ . "/../config/credential.php");
         $this->setAuthMethod($authMethod);
         $login = $credentials["username"];
@@ -65,10 +55,8 @@ class Application
 
     public function getData($url)
     {
-        $cacheIndex = md5($url) . '.cached';
-        if (file_exists(self::CACHE_PATH . $cacheIndex)) {
-            $data = unserialize(file_get_contents(self::CACHE_PATH . $cacheIndex));
-        } else {
+        $data = $this->cache->get($url);
+        if (false === $data) {
             curl_setopt($this->client, CURLOPT_URL, $url);
             $output = curl_exec($this->client);
             if (curl_errno($this->client)) {
@@ -79,7 +67,7 @@ class Application
                 "data" => $output,
                 "info" => $info,
             ];
-            file_put_contents(self::CACHE_PATH . $cacheIndex, serialize($data));
+            $this->cache->set($url, $data);
         }
         return $data;
     }
@@ -100,6 +88,15 @@ class Application
     {
         $this->authMethod = $method;
         return $this;
+    }
+
+    /**
+     * @param string $cacheType
+     * @param array $options
+     */
+    public function initCache(string $cacheType = "none", array $options = [])
+    {
+        $this->cache = new Cache($cacheType, $options);
     }
 
     public function __destruct()
