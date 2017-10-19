@@ -24,7 +24,7 @@ class Cache
         $this->delay = 3600;
         if (isset($options['delay'])){
             $delay = $options['delay'];
-            if (is_int($delay) and $delay > 0) {
+            if (is_int($delay) && $delay > 0) {
                 $this->delay = $delay;
             } else {
                 throw new \Exception("Invalid cache delay value '$delay'");
@@ -49,7 +49,7 @@ class Cache
     public function get(string $key)
     {
         $key = md5($key);
-        if (false != ($data = $this->cache->get($key))){
+        if (false !== ($data = $this->cache->get($key))){
             $timeStamp = array_shift($data);
             $now = new \DateTime();
             $delay = $now->getTimestamp() - $timeStamp['___creation_time___'];
