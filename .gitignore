@@ -1,4 +1,4 @@
-/config/credential.php
+/config/credentials.yml
 /vendor
 !/cache
 /cache/*
